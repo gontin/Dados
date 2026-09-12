@@ -1,69 +1,104 @@
-import Image from "next/image";
+'use client'
+import JogoDados from "@/components/JogoDados";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [rodada, setRodada] = useState(1)
+  const [textoCima, setTextoCima] = useState(`Rodada ${rodada}/5`)
+  const [textoBaixo, setTextoBaixo] = useState("")
+  const [fim, setFim] = useState(false)
+
+  const [vitoriap1, setVitoriap1] = useState(0)
+  const [vitoriap2, setVitoriap2] = useState(0)
+
+  const [jogadap1, setJogadap1] = useState(null)
+  const [jogadap2, setJogadap2] = useState(null)
+  
+  useEffect (() => {
+    if (jogadap1!==null && jogadap2!==null) {
+      if (jogadap1>jogadap2) {
+        setVitoriap1(vitoriap1+1)
+        setTextoBaixo("Jogador 1 Venceu")
+      } else if (jogadap2>jogadap1) {
+        setVitoriap2(vitoriap2+1)
+        setTextoBaixo("Jogador 2 Venceu")
+      } else if (jogadap1 === jogadap2) {
+        setTextoBaixo("Empate")
+      }
+
+      setTimeout(() => {
+        if (rodada === 5) {
+          setFim(true)
+          if (vitoriap1>vitoriap2) {
+            setTextoCima("Jogador 1 venceu o jogo")
+          } else if (vitoriap2>vitoriap1) {
+            setTextoCima("Jogador 2 venceu o jogo")
+          } else if (vitoriap1===vitoriap2) {
+            setTextoCima("Empate Geral")
+          }
+        } else {
+          setRodada(rodada+1)
+          setTextoCima(`Rodada ${rodada+1}/5`)
+          setTextoBaixo("")
+        }
+        setJogadap1(null)
+        setJogadap2(null)
+
+      }, 2000);
+
+    }
+
+
+  }, [jogadap1, jogadap2])
+
+  function reiniciar() {
+    setFim(false)
+    setRodada(1)
+    setVitoriap1(0)
+    setVitoriap2(0)
+    setJogadap1(null)
+    setJogadap2(null)
+    setTextoCima(`Rodada 1/5`)
+    setTextoBaixo("")
+
+  }
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="flex flex-col justify-center items-center h-screen text-white font-sans">
+      <h1 className="text-4xl font-bold mb-2">Jogo de Dados</h1>
+      <h2 className="text-xl text-gray-300 mb-6">{textoCima}</h2>
+      
+      <h3 className="text-lg mb-8 px-6 py-2">
+        Placar: Jogador 1 ({vitoriap1}) x ({vitoriap2}) Jogador 2
+      </h3>
+      
+      <div className="flex items-center">
+        <JogoDados 
+          player={1}
+          onJogar={setJogadap1}
+          jaJogou={jogadap1 !== null}
+          fim={fim}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.js
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        
+        {/* Aqui está a sua linha divisória corrigida */}
+        <div className="w-[2px] h-64 bg-white mx-8 rounded-full"></div>
+        
+        <JogoDados
+          player={2}
+          onJogar={setJogadap2}
+          jaJogou={jogadap2 !== null}
+          fim={fim}
+        />
+      </div>
+      
+      <h3 className="text-2xl font-bold my-6 h-8 text-yellow-400">{textoBaixo}</h3>
+      
+      {fim && (
+          <button 
+            onClick={reiniciar} 
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-colors"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
-}
+            Jogar Novamente
+          </button>
+      )}
+    </main>
+  )}
