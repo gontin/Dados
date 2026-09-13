@@ -71,21 +71,20 @@ export default function Home() {
         Placar: Jogador 1 ({vitoriap1}) x ({vitoriap2}) Jogador 2
       </h3>
       
-      <div className="flex items-center">
+      <div className="flex">
         <JogoDados 
           player={1}
           onJogar={setJogadap1}
-          jaJogou={jogadap1 !== null}
+          bloqueado={jogadap1 !== null}
           fim={fim}
         />
         
-        {/* Aqui está a sua linha divisória corrigida */}
-        <div className="w-[2px] h-64 bg-white mx-8 rounded-full"></div>
+        <div className="w-[2px] bg-gray-600 mx-8 rounded-full"></div>
         
         <JogoDados
           player={2}
           onJogar={setJogadap2}
-          jaJogou={jogadap2 !== null}
+          bloqueado={jogadap1 === null || jogadap2 !== null}
           fim={fim}
         />
       </div>
